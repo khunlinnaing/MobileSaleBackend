@@ -12,16 +12,11 @@ const CategoriesSchema = new Schema({
         unique: true
     },
     Type: {
-        type: Number,
-        required: true,
-    },
-    Quality: {
         type: String,
-        required: true
+        required: true,
     },
     Photo:{
         type: String,
-        require: true
     },
     Amout: {
         type: String,
