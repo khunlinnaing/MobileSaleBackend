@@ -1,0 +1,89 @@
+
+### POST User Data
+
+POST http://localhost:5000/api/user/signup
+Content-Type: application/json
+
+{
+    "firstName": "Aung",
+    "lastName": "Kyaw",
+    "email": "aungkyaw1@gmail.com",
+    "phone": "09776829751",
+    "mobile": "09440751513",
+    "address": "Pin Lon",
+    "birthday": "5-61996",
+    "profile": "",
+    "role": 0,
+    "password": "admin12345",
+    "confirmpassword": "admin12345"
+}
+
+### GetAll User
+Get http://localhost:5000/api/user
+
+### Get user By email
+Get http://localhost:5000/api/user/aungaung@gmail.com
+
+
+### Update user
+PUT http://localhost:5000/api/user/
+### Login
+POST http://localhost:5000/api/user/login
+Content-Type: application/json
+
+{
+    "password":"admin12345",
+    "email":"admin@gmail.com"
+}
+
+### Category
+GET http://localhost:5000/api/category
+
+
+### Create Category
+POST http://localhost:5000/api/category
+Content-Type: application/json
+
+{
+    "UserId":"653387a2d99448a24202018b",
+    "Name": "Computer",
+    "Type": 12,
+    "Quality": "12",
+    "Photo":"",
+    "Amout": "It a good Product",
+    "Description":"Testing"
+}
+
+### Update Category
+PATCH http://localhost:5000/api/category/653928c39a440714cfa70339
+Content-Type: application/json
+
+{
+    "Name": "Phone",
+    "Type": 12,
+    "Quality": "12",
+    "Photo":"",
+    "Amout": "It a good Product",
+    "Description":"Testing"
+}
+
+### Delete Category
+DELETE http://localhost:5000/api/category/653928c39a440714cfa70339
+
+### Products
+GET http://localhost:5000/api/products
+
+### Create Product
+POST http://localhost:5000/api/products
+Content-Type: application/json
+
+{
+    "UserId":"653387a2d99448a24202018b",
+    "CategoryId":"6539299b453e22cbe2ce18f8",
+    "Name": "Computer",
+    "Type": "Lenovo2",
+    "Price": "120",
+    "Photo":"",
+    "Amout": "It a good Product",
+    "Description":"Testing"
+}
