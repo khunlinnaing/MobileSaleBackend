@@ -31,7 +31,7 @@ getProductByID= async (req, res, next) => {
 CrateProcut = async (req, res, next) =>{
     const { UserId, CategoryId, Name, Type, Price, Quantity,Photo, Description } = req.body
     try{
-        const checkProductType =await Product.findOne({Name: Name.toUpperCase(), Type: Type.toUpperCase() });
+        const checkProductType =await Product.findOne({Name: Name.toUpperCase(), Type: Type.toUpperCase(), CategoryId: CategoryId });
         if (checkProductType) {
             return res.json({ message: `${Name} type(${Type}) is already exit`, status: 0 });
         }
@@ -52,7 +52,7 @@ UpdateProduct= async (req, res, next) => {
         return res.json({ error: 'This Product  is not found', ststus: 0 });
     }
     if(req.body.Type){
-        const checkCategoryName = await Product.findOne({ Type: (req.body.Type).toUpperCase()});
+        const checkCategoryName = await Product.findOne({ Name:  (req.body.Name).toUpperCase(),Type: (req.body.Type).toUpperCase()});
         if (checkCategoryName){
             return res.json({ error: `${req.body.Name}(type ${req.body.Type}) is already exit!`, status: 0 });
         }
@@ -84,10 +84,32 @@ DeleteProduct=async( req, res, next) =>{
         return res.json({ message: "Delete is not Successfully.", status: 0})
     }
 };
+
+getProductByCategoryId= async (req, res, next) =>{
+    const id = req.params.id;
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+
+    const startIndex = (page - 1) * limit;
+    const endIndex = page * limit;
+    const total = await Product.countDocuments({});
+    let Products;
+    try{
+        Products = await Product.find({CategoryId: id});
+    }catch(error){
+        return res.json({message: error.message, status: 0})
+    }
+    if(!Products){
+        return res.json({ message: "No Product", status: 0});
+    }
+    return res.json({ data: Products.slice(startIndex, endIndex), total: Math.ceil(total/limit), status: 1 })
+}
+
 module.exports = {
     getAllProduct,
     getProductByID,
     CrateProcut,
     UpdateProduct,
-    DeleteProduct
+    DeleteProduct,
+    getProductByCategoryId
 }

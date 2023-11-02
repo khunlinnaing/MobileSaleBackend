@@ -93,3 +93,12 @@ Content-Type: application/json
     "Amout": "It a good Product",
     "Description":"Testing"
 }
+
+###
+POST  http://localhost:5000/api/products/test
+Content-Type: application/javascript
+
+{
+    "name":"ODOO15",
+    "type":"PRO"
+}
