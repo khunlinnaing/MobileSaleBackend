@@ -1,5 +1,6 @@
 const Category = require('../models/Category');
-getAllCategories = async (req, res, next) =>{
+
+getCategories = async (req, res, next) =>{
     let Categories;
     try{
         Categories = await Category.find();
@@ -10,6 +11,25 @@ getAllCategories = async (req, res, next) =>{
         return res.json({ message: "No Category", status: 0});
     }
     return res.json({ data: Categories, status: 1 })
+}
+
+getAllCategories = async (req, res, next) =>{
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+
+    const startIndex = (page - 1) * limit;
+    const endIndex = page * limit;
+    const total = await Category.countDocuments({});
+    let Categories;
+    try{
+        Categories = await Category.find();
+    }catch(error){
+        return res.json({message: error.message, status: 0})
+    }
+    if(!Categories){
+        return res.json({ message: "No Category", status: 0});
+    }
+    return res.json({ data: Categories.slice(startIndex, endIndex), total: Math.ceil(total/limit), status: 1 })
 }
 GetCategoryByID= async (req, res, next) => {
     const id = req.params.id;
@@ -44,7 +64,7 @@ UpdateCategory= async (req, res, next) => {
         return res.json({ error: 'This main category  is not found', ststus: 0 });
     }
     if(req.body.Name){
-        const checkCategoryName = await Category.findOne({ Name: (req.body.Name).toUpperCase()});
+        const checkCategoryName = await Category.findOne({Name: (req.body.Name).toUpperCase()});
         if (checkCategoryName){
             return res.json({ error: req.body.Name +' is already exit!', status: 0 });
         }
@@ -77,6 +97,7 @@ DeleteCategory=async( req, res, next) =>{
     }
 };
 module.exports = {
+    getCategories,
     getAllCategories,
     GetCategoryByID,
     CrateCategory,

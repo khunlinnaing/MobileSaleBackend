@@ -1,5 +1,11 @@
 const Product = require('../models/Products');
 getAllProduct = async (req, res, next) =>{
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+
+    const startIndex = (page - 1) * limit;
+    const endIndex = page * limit;
+    const total = await Product.countDocuments({});
     let Products;
     try{
         Products = await Product.find();
@@ -9,17 +15,27 @@ getAllProduct = async (req, res, next) =>{
     if(!Products){
         return res.json({ message: "No Product", status: 0});
     }
-    return res.json({ data: Products, status: 1 })
+    return res.json({ data: Products.slice(startIndex, endIndex), total: Math.ceil(total/limit), status: 1 })
+}
+
+
+getProductByID= async (req, res, next) => {
+    const id = req.params.id;
+    const exitingProduct = await Product.findById(id);
+    if (!exitingProduct) {
+        return res.json({ error: 'This main category  is not found', ststus: 0 });
+    }
+    return res.json({data: exitingProduct, status:1})
 }
 
 CrateProcut = async (req, res, next) =>{
-    const { UserId, CategoryId, Name, Type, Price, Photo, Amout, Description } = req.body
+    const { UserId, CategoryId, Name, Type, Price, Quantity,Photo, Description } = req.body
     try{
-        const checkProductType =await Product.findOne({ Type: Type.toUpperCase() });
+        const checkProductType =await Product.findOne({Name: Name.toUpperCase(), Type: Type.toUpperCase() });
         if (checkProductType) {
             return res.json({ message: `${Name} type(${Type}) is already exit`, status: 0 });
         }
-        const newProduct = new Product({ UserId:UserId, CategoryId:CategoryId,Name: Name.toUpperCase(), Type:Type.toUpperCase(), Price: Price, Photo: Photo, Amout: Amout, Description: Description });
+        const newProduct = new Product({ UserId:UserId, CategoryId:CategoryId,Name: Name.toUpperCase(), Type:Type.toUpperCase(), Price: Price,Quantity: Quantity, Photo: Photo, Description: Description });
         await newProduct.save();
         return res.json({ message: "Create New Product is Successfully!.", status: 1});
         
@@ -70,6 +86,7 @@ DeleteProduct=async( req, res, next) =>{
 };
 module.exports = {
     getAllProduct,
+    getProductByID,
     CrateProcut,
     UpdateProduct,
     DeleteProduct

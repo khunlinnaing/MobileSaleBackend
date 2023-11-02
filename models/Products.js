@@ -16,8 +16,11 @@ const ProductSchema = new Schema({
     },
     Type: {
         type: String,
-        required: true,
-        unique: true
+        required: true
+    },
+    Quantity: {
+        type: String,
+        required: true
     },
     Price: {
         type: String,
@@ -26,10 +29,6 @@ const ProductSchema = new Schema({
     Photo:{
         type: String,
         require: true
-    },
-    Amout: {
-        type: String,
-        required: true
     },
     Description:{
         type: String
