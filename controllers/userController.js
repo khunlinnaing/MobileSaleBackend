@@ -2,6 +2,12 @@ const User = require('../models/Users');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 getAllUser = async (req, res, next) =>{
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+
+    const startIndex = (page - 1) * limit;
+    const endIndex = page * limit;
+    const total = await User.countDocuments({});
     let users;
     try{
         users = await User.find();
@@ -9,9 +15,9 @@ getAllUser = async (req, res, next) =>{
     console.log(error)
     }
     if(!users){
-        return res.status(404).json({ message: "No Users Found"});
+        return res.json({ message: "No Users Found"});
     }
-    return res.status(200).json({ users })
+    return res.json({ data:users.slice(startIndex, endIndex), total: Math.ceil(total/limit), status: 1 })
 }
 UpdateUser = async (req, res, next) =>{
     const id = req.params.id;
@@ -51,6 +57,15 @@ getByEamil = async (req, res, next) =>{
     }
 }
 
+getById = async (req, res, next) =>{
+    const id= req.params.id
+    try{
+        const user = await User.findById(id)
+        return res.json({info: user, status: 1})
+    }catch(err){
+        return res.json({message: err.message, status: 0})
+    }
+}
 singup = async (req, res, next) =>{
     const { firstName, lastName, email, phone, mobile, address, birthday, profile, role,password, confirmpassword, gender } = req.body
     try{
@@ -92,7 +107,7 @@ login = async (req, res, next) =>{
             return res.json({ message: "Password is invalid", status: 0});
         }
         const token = jwt.sign({userId: user.id, email: user.email}, "somesupersecretkey", {
-            expiresIn : '1h'
+            expiresIn : '24 * 60 * 60'
         });
         const data ={
                 "id": user._id,
@@ -110,10 +125,21 @@ login = async (req, res, next) =>{
         return res.json(data)
     }
 }
+DeleteUser=async( req, res, next) =>{
+    const id= req.params.id
+    const deleteval = await User.deleteOne({ _id: id });
+    if(deleteval.deletedCount == 1){
+        return res.json({ message: "Delete is Successfully.", status: 1})
+    }else{
+        return res.json({ message: "Delete is not Successfully.", status: 0})
+    }
+};
 module.exports = {
     getAllUser,
     getByEamil,
     UpdateUser,
     singup,
-    login
+    login,
+    getById,
+    DeleteUser
 }

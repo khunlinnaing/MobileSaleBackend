@@ -1,7 +1,10 @@
 const Category = require('../models/Category');
-
+const Product = require('../models/Products');
 getCategories = async (req, res, next) =>{
     let Categories;
+    if(!req.isAuth){
+        return res.json({ message: "You Need to login or take token!", status: 0})
+    }
     try{
         Categories = await Category.find();
     }catch(error){
@@ -14,6 +17,9 @@ getCategories = async (req, res, next) =>{
 }
 
 getAllCategories = async (req, res, next) =>{
+    if(!req.isAuth){
+        return res.json({ message: "You Need to login or take token!", status: 0})
+    }
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
 
@@ -32,6 +38,9 @@ getAllCategories = async (req, res, next) =>{
     return res.json({ data: Categories.slice(startIndex, endIndex), total: Math.ceil(total/limit), status: 1 })
 }
 GetCategoryByID= async (req, res, next) => {
+    if(!req.isAuth){
+        return res.json({ message: "You Need to login or take token!", status: 0})
+    }
     const id = req.params.id;
     const exitingCategory = await Category.findById(id);
     if (!exitingCategory) {
@@ -41,6 +50,9 @@ GetCategoryByID= async (req, res, next) => {
 }
 
 CrateCategory = async (req, res, next) =>{
+    if(!req.isAuth){
+        return res.json({ message: "You Need to login or take token!", status: 0})
+    }
     const { UserId, Name, Type, Quality, Photo, Amout, Description } = req.body
     try{
         const checkCategory =await Category.findOne({ Name: Name.toUpperCase() });
@@ -57,6 +69,9 @@ CrateCategory = async (req, res, next) =>{
 }
 
 UpdateCategory= async (req, res, next) => {
+    if(!req.isAuth){
+        return res.json({ message: "You Need to login or take token!", status: 0})
+    }
     const id = req.params.id;
     const updateData = req.body;
     const exitingCategory = await Category.findById(id);
@@ -88,19 +103,52 @@ UpdateCategory= async (req, res, next) => {
     })
 };
 DeleteCategory=async( req, res, next) =>{
+    if(!req.isAuth){
+        return res.json({ message: "You Need to login or take token!", status: 0})
+    }
     const id= req.params.id
-    const deleteval = await Category.deleteOne({ _id: id });
-    if(deleteval.deletedCount == 1){
-        return res.status(200).json({ message: "Delete is Successfully.", status: 1})
+    const checkProduct =await Product.find({ CategoryId: id});
+    if(checkProduct.length != 0){
+        const deleteval = await Category.deleteOne({ _id: id });
+        const deleteProduct = await Product.deleteOne({ CategoryId: id });
+        if(deleteval.deletedCount == 1 && deleteProduct.deletedCount == 1){
+            return res.status(200).json({ message: "Delete is Successfully.", status: 1})
+        }else{
+            return res.status(404).json({ message: "Delete is not Successfully.", status: 0})
+        }
     }else{
-        return res.status(404).json({ message: "Delete is not Successfully.", status: 0})
+        const deleteval = await Category.deleteOne({ _id: id });
+        if(deleteval.deletedCount == 1){
+            return res.status(200).json({ message: "Delete is Successfully.", status: 1})
+        }else{
+            return res.status(404).json({ message: "Delete is not Successfully.", status: 0})
+        }
     }
 };
+
+HomePageCategory = async (req, res, next) =>{
+    const page =1;
+    const limit =10;
+
+    const startIndex = (page - 1) * limit;
+    const endIndex = page * limit;
+    let Categories;
+    try{
+        Categories = await Category.find();
+    }catch(error){
+        return res.json({message: error.message, status: 0})
+    }
+    if(!Categories){
+        return res.json({ message: "No Category", status: 0});
+    }
+    return res.json({ data: Categories.slice(startIndex, endIndex), status: 1 })
+}
 module.exports = {
     getCategories,
     getAllCategories,
     GetCategoryByID,
     CrateCategory,
     UpdateCategory,
-    DeleteCategory
+    DeleteCategory,
+    HomePageCategory
 }

@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const { testGroupby,getAllProduct, getProductByID, CrateProcut, UpdateProduct, DeleteProduct, getProductByCategoryId } = require('../controllers/productController')
+const { HomePageProduct,getAllProduct, getProductByID, CrateProcut, UpdateProduct, DeleteProduct, getProductByCategoryId } = require('../controllers/productController')
+
+router.get('/home', HomePageProduct);
 router.get('/' , getAllProduct);
 router.post('/', CrateProcut);
 router.get('/category/:id', getProductByCategoryId);

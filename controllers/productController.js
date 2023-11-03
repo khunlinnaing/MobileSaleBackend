@@ -1,5 +1,8 @@
 const Product = require('../models/Products');
 getAllProduct = async (req, res, next) =>{
+    if(!req.isAuth){
+        return res.json({ message: "You Need to login or take token!", status: 0})
+    }
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
 
@@ -20,6 +23,9 @@ getAllProduct = async (req, res, next) =>{
 
 
 getProductByID= async (req, res, next) => {
+    if(!req.isAuth){
+        return res.json({ message: "You Need to login or take token!", status: 0})
+    }
     const id = req.params.id;
     const exitingProduct = await Product.findById(id);
     if (!exitingProduct) {
@@ -29,6 +35,9 @@ getProductByID= async (req, res, next) => {
 }
 
 CrateProcut = async (req, res, next) =>{
+    if(!req.isAuth){
+        return res.json({ message: "You Need to login or take token!", status: 0})
+    }
     const { UserId, CategoryId, Name, Type, Price, Quantity,Photo, Description } = req.body
     try{
         const checkProductType =await Product.findOne({Name: Name.toUpperCase(), Type: Type.toUpperCase(), CategoryId: CategoryId });
@@ -45,6 +54,9 @@ CrateProcut = async (req, res, next) =>{
 }
 
 UpdateProduct= async (req, res, next) => {
+    if(!req.isAuth){
+        return res.json({ message: "You Need to login or take token!", status: 0})
+    }
     const id = req.params.id;
     const updateData = req.body;
     const exitingProduct = await Product.findById(id);
@@ -76,6 +88,9 @@ UpdateProduct= async (req, res, next) => {
     })
 };
 DeleteProduct=async( req, res, next) =>{
+    if(!req.isAuth){
+        return res.json({ message: "You Need to login or take token!", status: 0})
+    }
     const id= req.params.id
     const deleteval = await Product.deleteOne({ _id: id });
     if(deleteval.deletedCount == 1){
@@ -86,6 +101,9 @@ DeleteProduct=async( req, res, next) =>{
 };
 
 getProductByCategoryId= async (req, res, next) =>{
+    if(!req.isAuth){
+        return res.json({ message: "You Need to login or take token!", status: 0})
+    }
     const id = req.params.id;
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
@@ -105,11 +123,29 @@ getProductByCategoryId= async (req, res, next) =>{
     return res.json({ data: Products.slice(startIndex, endIndex), total: Math.ceil(total/limit), status: 1 })
 }
 
+HomePageProduct = async (req, res, next) =>{
+    const page =1;
+    const limit =10;
+
+    const startIndex = (page - 1) * limit;
+    const endIndex = page * limit;
+    let Products;
+    try{
+        Products = await Product.find();
+    }catch(error){
+        return res.json({message: error.message, status: 0})
+    }
+    if(!Products){
+        return res.json({ message: "No Product", status: 0});
+    }
+    return res.json({ data: Products.slice(startIndex, endIndex), status: 1 })
+}
 module.exports = {
     getAllProduct,
     getProductByID,
     CrateProcut,
     UpdateProduct,
     DeleteProduct,
-    getProductByCategoryId
+    getProductByCategoryId,
+    HomePageProduct
 }

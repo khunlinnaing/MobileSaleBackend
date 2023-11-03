@@ -33,12 +33,12 @@ Content-Type: application/json
 
 {
     "password":"admin12345",
-    "email":"admin@gmail.com"
+    "email":"khunlinkyaw@gmail.com"
 }
 
 ### Category
-GET http://localhost:5000/api/category
-
+GET http://localhost:5000/api/category/all
+token: token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NTNhNmU4N2U5NWU4ZTA4YzdhNGY1NjIiLCJlbWFpbCI6ImtodW5saW5reWF3QGdtYWlsLmNvbSIsImlhdCI6MTY5ODk5NjUzMCwiZXhwIjoxNjk5MDAwMTMwfQ.P_j4ffWlvBn2VsshuHdlGFhQ8Mqc5KbaG9NZIqseJJg
 
 ### Category by id
 GET http://localhost:5000/api/category/65409cc9ea323c720a26fb4b
@@ -95,10 +95,4 @@ Content-Type: application/json
 }
 
 ###
-POST  http://localhost:5000/api/products/test
-Content-Type: application/javascript
-
-{
-    "name":"ODOO15",
-    "type":"PRO"
-}
+GET http://localhost:5000/api/user/testing

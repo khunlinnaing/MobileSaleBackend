@@ -5,6 +5,7 @@ const cors = require('cors');
 const db = require('./dbconnection/dbconnect')
 
 
+const isAuth = require('./middleware/middleware');
 const UserRoute = require('./routes/user_routes')
 const CategoryRoute = require('./routes/category_routes')
 const ProductRoute = require('./routes/products_routes')
@@ -14,6 +15,7 @@ app.use(cors());
 app.use(bodyparser.json());
 app.use(express.json());
 
+app.use(isAuth);
 app.use('/api/user', UserRoute);
 app.use('/api/category', CategoryRoute);
 app.use('/api/products',ProductRoute);
