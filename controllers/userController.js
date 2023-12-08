@@ -49,7 +49,7 @@ getByEamil = async (req, res, next) =>{
     try{
         const user = await User.findOne({email: email})
         const token = jwt.sign({userId: user.id, email: user.email}, "somesupersecretkey", {
-            expiresIn : '1h'
+            expiresIn : '1d'
         });
         return res.json({info: user, status: 1, token: token})
     }catch(err){
@@ -87,7 +87,7 @@ singup = async (req, res, next) =>{
             });
             await newuser.save();
             const token = jwt.sign({email: email, password: hashedPassword}, "somesupersecretkey", {
-                expiresIn : '1h'
+                expiresIn : '1d'
             });
             return res.json({ message: "Create New User is Successfully!.", status: 1, token: token, value: newuser });
         }
@@ -107,7 +107,7 @@ login = async (req, res, next) =>{
             return res.json({ message: "Password is invalid", status: 0});
         }
         const token = jwt.sign({userId: user.id, email: user.email}, "somesupersecretkey", {
-            expiresIn : '24 * 60 * 60'
+            expiresIn : '1d'
         });
         const data ={
                 "id": user._id,
